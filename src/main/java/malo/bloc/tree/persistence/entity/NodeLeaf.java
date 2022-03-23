@@ -2,6 +2,7 @@ package malo.bloc.tree.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.util.Set;
 @Table(name = "node_leaf")
 @Getter
 @Setter
+@Accessors(chain = true)
 @ToString
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -23,9 +25,10 @@ public class NodeLeaf implements Serializable {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "tree_id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private Tree tree;
 
     @Column(name = "title", nullable = false)

@@ -19,9 +19,10 @@ public class Metadata implements Serializable {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "leaf_id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private NodeLeaf leaf;
 
     @Column(name = "name", nullable = false)

@@ -1,6 +1,7 @@
 package malo.bloc.tree.persistence.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "user")
 @Getter
 @Setter
+@Accessors(chain = true)
 @ToString
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -19,8 +21,7 @@ public class User implements Serializable {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinColumn(name = "tree_id")
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "user")
     private Tree tree;
 
     @Column(name = "first_name", nullable = false)
@@ -39,12 +40,12 @@ public class User implements Serializable {
     private String city;
 
     @Column(name = "adresse", length = 150)
-    private String adresse;
+    private String address;
 
-    @Column(name = "updated_at", nullable = true)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "created_at", nullable = true)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @PrePersist

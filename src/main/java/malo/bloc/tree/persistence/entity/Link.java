@@ -19,9 +19,10 @@ public class Link implements Serializable {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "leaf_id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private NodeLeaf leaf;
 
     @Column(name = "name")
@@ -30,6 +31,6 @@ public class Link implements Serializable {
     @Column(name = "value", nullable = false)
     private String value;
 
-    @Column(name = "updated_at", nullable = true,columnDefinition = "TIMESTAMP")
+    @Column(name = "updated_at",columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 }
