@@ -7,6 +7,9 @@ import malo.bloc.tree.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
+
 @Service
 public class UserService {
     @Autowired
@@ -26,6 +29,17 @@ public class UserService {
 
     public User getUserById(int id){
         return userRepository.getById(id);
+    }
+
+    public Optional<User> delete(int id){
+        Optional<User> user = userRepository.findById(id);
+       if(user.isPresent()) {
+           userRepository.deleteById(id);
+           userRepository.flush();
+           Optional<User> shadowUser= userRepository.findById(id);
+           return shadowUser.isPresent()? Optional.of(null) : user;
+       }
+       throw new EntityNotFoundException("user with id = "+id+" does not found for delete");
     }
     
     private User handleAssociationForSave(User user){
