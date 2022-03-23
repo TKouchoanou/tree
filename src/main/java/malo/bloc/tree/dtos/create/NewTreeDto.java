@@ -16,6 +16,7 @@ public class NewTreeDto implements Serializable {
     private final String name;
     private final LocalDateTime updatedAt;
     private final LocalTime createdAt;
+    @Valid
     private final NewNodeLeafDto nodeLeaf;
     private final Set<NewTreeDto> metadata;
 }

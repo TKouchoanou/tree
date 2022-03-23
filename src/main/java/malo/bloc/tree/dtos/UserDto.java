@@ -2,6 +2,7 @@ package malo.bloc.tree.dtos;
 
 import lombok.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto implements Serializable {
+    @Valid
     private TreeDto tree;
     @NotNull
     private   Integer id;

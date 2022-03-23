@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class NewUserDto implements Serializable {
+    @Valid
     private final NewTreeDto tree;
     private final String firstName;
     private final String lastName;

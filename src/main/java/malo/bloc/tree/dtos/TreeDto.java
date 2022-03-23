@@ -3,6 +3,7 @@ package malo.bloc.tree.dtos;
 import lombok.*;
 import malo.bloc.tree.dtos.NodeLeafDto;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -24,6 +25,7 @@ public class TreeDto implements Serializable {
     private   String name;
     private   LocalDateTime updatedAt;
     private   LocalTime createdAt;
+    @Valid
     private   NodeLeafDto nodeLeaf;
     private   Set<Integer> childIds;
     private   Integer userId;

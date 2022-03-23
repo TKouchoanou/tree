@@ -2,6 +2,7 @@ package malo.bloc.tree.dtos;
 
 import lombok.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -20,7 +21,9 @@ public class NodeLeafDto implements Serializable {
     @NotNull
     @NotBlank
     private   String title;
+    @Valid
     private   Set<LinkDto> links;
+    @Valid
     private   Set<MetadataDto> metadata;
     private   LocalDateTime updatedAt;
     private   LocalDateTime createdAt;
