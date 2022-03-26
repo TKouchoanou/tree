@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import malo.bloc.tree.dtos.UserDto;
 import malo.bloc.tree.dtos.create.NewUserDto;
 import malo.bloc.tree.dtos.error.ErrorDtoInterface;
-import malo.bloc.tree.mapper.Dto2EntityMapper;
+import malo.bloc.tree.mapper.user.UserDto2EntityMapper;
 import malo.bloc.tree.persistence.entity.User;
 import malo.bloc.tree.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    Dto2EntityMapper mapper;
+    UserDto2EntityMapper mapper;
 
     @Autowired
     ErrorDtoInterface error;
@@ -44,7 +44,7 @@ public class UserController {
 
     @GetMapping(value = "/user/{id}")
     public UserDto show(@PathVariable("id") int id){
-        return (UserDto) mapper.toDto(userService.getUserById(id),UserDto.class);
+        return  mapper.toDto(userService.getUserById(id));
     }
 
     @SneakyThrows
@@ -53,8 +53,8 @@ public class UserController {
         if(bindingResult.hasErrors()){
             throw new Exception(""+bindingResult.getFieldErrors()+" "+bindingResult.getFieldErrors());
         }
-        User user =(User) mapper.toEntity(userDto,User.class);
-        return  (UserDto) mapper.toDto(userService.save(user),UserDto.class);
+        User user = mapper.toEntity(userDto);
+        return  mapper.toDto(userService.save(user));
     }
 
     @PutMapping(value = "/user/{id}")
@@ -62,16 +62,16 @@ public class UserController {
         if(!Objects.equals(id,userDto.getId())){
             throw new IllegalArgumentException("User IDs don't match");
         }
-        User user = (User) mapper.toEntity(userDto,User.class);
-        return (UserDto) mapper.toDto(userService.update(user),UserDto.class);
+        User user =  mapper.toEntity(userDto);
+        return  mapper.toDto(userService.update(user));
     }
 
     @DeleteMapping(value = "/user/{id}")
-    public ResponseEntity delete(@PathVariable("id") int id) {
+    public ResponseEntity<Object> delete(@PathVariable("id") int id) {
         try {
             Optional<User> user = userService.delete(id);
             if (user.isPresent()) {
-                UserDto userDto= (UserDto) mapper.toDto(user.get(),UserDto.class);
+                UserDto userDto=  mapper.toDto(user.get());
                 return new ResponseEntity<>(userDto,HttpStatus.OK);
             }
             return new ResponseEntity<>(error.setMessage("Failed to delete user with id ="+id),HttpStatus.OK);
