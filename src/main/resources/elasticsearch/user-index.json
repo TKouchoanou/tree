@@ -1,0 +1,12 @@
+{
+  "mappings": {
+    "properties": {
+      "firstName": { "type": "text" },
+      "lastName": { "type": "text" },
+      "email": { "type": "text" },
+      "country": { "type": "text" },
+      "city": { "type": "text" },
+      "adresse": { "type": "text" }
+    }
+  }
+}
