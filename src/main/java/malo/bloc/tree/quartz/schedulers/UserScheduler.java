@@ -23,7 +23,14 @@ public class UserScheduler extends GenericScheduler {
         return UserJob.class;
     }
 
- 
+    @SneakyThrows
+    @PostPersist
+    @PostUpdate
+    public void onUserPersist(User user){
+        this.scheduleOneShotIn(10,ChronoUnit.SECONDS);
+        log.info(" \n [USER PERSIST OR UPDATE LISTENER ] About update of user: " + user.getId());
+    }
+    
     @Override
     protected void setTriggerRecurrence(TriggerBuilder triggerBuilder) {
         triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule("0 0/5 21-23 ? * THU-FRI"));

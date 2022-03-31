@@ -2,6 +2,8 @@ package malo.bloc.tree.persistence.entity;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import malo.bloc.tree.quartz.schedulers.UserScheduler;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(UserScheduler.class)
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
