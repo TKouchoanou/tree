@@ -16,11 +16,11 @@ public class UserService {
     private UserRepository userRepository;
 
     public User save(User user){
-        return userRepository.save(this.handleAssociationForSave(user));
+        return userRepository.save(user);
     }
 
     public User update(User user){
-        return userRepository.save(this.handleAssociationForSave(user));
+        return userRepository.save(user);
     }
 
     public Iterable <User> getAllUsers(){
@@ -29,6 +29,17 @@ public class UserService {
 
     public User getUserById(int id){
         return userRepository.getById(id);
+    }
+
+    public   Optional<User>  findById(int id){
+        return userRepository.findById(id);
+    }
+    public User getUserByIdOrThrowException(int userId){
+        Optional<User> optionalUser = this.findById(userId);
+        if(optionalUser.isPresent()){
+            return optionalUser.get();
+        }
+        throw new EntityNotFoundException("user with id = "+userId+" does not found for delete");
     }
 
     public Optional<User> delete(int id){
@@ -41,14 +52,5 @@ public class UserService {
        }
        throw new EntityNotFoundException("user with id = "+id+" does not found for delete");
     }
-    
-    private User handleAssociationForSave(User user){
-        Tree tree = user.getTree();
-        NodeLeaf leaf = tree.getNodeLeaf();
-        tree.setUser(user);
-        leaf.setTree(tree);
-        leaf.getLinks().forEach(l -> l.setLeaf(leaf));
-        leaf.getMetadata().forEach(m-> m.setLeaf(leaf));
-        return user;
-    }
+
 }
