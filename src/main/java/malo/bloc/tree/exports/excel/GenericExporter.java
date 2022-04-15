@@ -18,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public abstract class GenericExport <T>implements ExcelExporter<T> {
+public abstract class GenericExporter<T>implements ExcelExporter<T> {
     Workbook workbook ;
 
     /**

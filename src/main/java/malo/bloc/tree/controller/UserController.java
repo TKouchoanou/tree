@@ -49,12 +49,12 @@ public class UserController {
 
     @SneakyThrows
     @PostMapping(value = "/user")
-    public UserDto save(@Valid @RequestBody NewUserDto userDto, BindingResult bindingResult){
+    public UserDto create(@Valid @RequestBody NewUserDto userDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             throw new Exception(""+bindingResult.getFieldErrors()+" "+bindingResult.getFieldErrors());
         }
         User user = mapper.toEntity(userDto);
-        return  mapper.toDto(userService.save(user));
+        return  mapper.toDto(userService.create(user));
     }
 
     @PutMapping(value = "/user/{id}")

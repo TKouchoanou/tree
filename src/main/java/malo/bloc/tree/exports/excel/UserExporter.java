@@ -2,7 +2,6 @@ package malo.bloc.tree.exports.excel;
 
 import com.google.common.collect.Lists;
 import javafx.util.Pair;
-import malo.bloc.tree.exports.excel.GenericExport;
 import malo.bloc.tree.persistence.entity.User;
 import malo.bloc.tree.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 @Component
-public class UserExport extends GenericExport<User> {
+public class UserExporter extends GenericExporter<User> {
     @Autowired
     UserService userService;
     private static final int SHEET_SIZE=100;
@@ -41,9 +40,9 @@ public class UserExport extends GenericExport<User> {
     }
 
     @Override
-    protected List<GenericExport<User>.ExcelFileConf> buildConf(List<User> beans) {
+    protected List<GenericExporter<User>.ExcelFileConf> buildConf(List<User> beans) {
 
-        List<GenericExport<User>.ExcelFileConf> fileConfs = new ArrayList<>();
+        List<GenericExporter<User>.ExcelFileConf> fileConfs = new ArrayList<>();
         for (List<User> batchBeans:Lists.partition(beans, SHEET_SIZE)) {
             //each excel leaf conf
             fileConfs.add(getConf(batchBeans, sheetName));
@@ -52,21 +51,21 @@ public class UserExport extends GenericExport<User> {
     }
 
     @Override
-    protected List<GenericExport<User>.ExcelFileConf> getDefaultConf() {
+    protected List<GenericExporter<User>.ExcelFileConf> getDefaultConf() {
         List<User> users =
                 StreamSupport.stream(userService.getAllUsers().spliterator(),false)
                         .collect(Collectors.toList());
         return buildConf(users);
     }
 
-    private GenericExport<User>.ExcelFileConf getConf(List<User> beans, String sheetName){
+    private GenericExporter<User>.ExcelFileConf getConf(List<User> beans, String sheetName){
         Pair<Integer,Integer> columnOneWidth= new Pair<>(0,6000);
         Pair<Integer,Integer> columnTwoWidth= new Pair<>(1,4000);
         List<Pair<Integer,Integer>> columnsWidth = new ArrayList<>();
         columnsWidth.add(columnOneWidth);
         columnsWidth.add(columnTwoWidth);
 
-        GenericExport<User>.ExcelFileConf conf= newConf();
+        GenericExporter<User>.ExcelFileConf conf= newConf();
         conf.setBeans(beans);
        return  conf.setColumnsWidth(columnsWidth).setSheetName(sheetName);
 

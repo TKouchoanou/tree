@@ -3,7 +3,7 @@ package malo.bloc.tree.controller;
 import malo.bloc.tree.dtos.TreeDto;
 import malo.bloc.tree.dtos.create.NewTreeDto;
 import malo.bloc.tree.dtos.error.ErrorDtoInterface;
-import malo.bloc.tree.exports.UserExport;
+import malo.bloc.tree.exports.FormatExporterFactory;
 import malo.bloc.tree.mapper.tree.TreeDto2EntityMapper;
 import malo.bloc.tree.persistence.entity.Tree;
 import malo.bloc.tree.persistence.entity.User;
@@ -22,10 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -42,9 +39,11 @@ public class TreeController {
     @Autowired
     ErrorDtoInterface error;
     @Autowired
-    UserExport excelExporter;
+    FormatExporterFactory<User> exporterFactory;
 
-  
+    @Autowired
+    @Qualifier("main")
+    UserRepository userSearchRepository;
 
 
     @PostMapping(value= "user/{userid}/add/child/tree/{treeId}")
@@ -89,21 +88,29 @@ public class TreeController {
         }
     }
 
+    @GetMapping(value= "user/{userid}/search")
+    private Optional<malo.bloc.tree.search.bean.User> test(TreeDto treeDto){
+       userSearchRepository.findAll().forEach(v->System.out.println(v.getId()));
+        return userSearchRepository.findById(""+treeDto.getId());
+    }
 
-    @GetMapping("/users/export/excel")
-    public void exportToExcel(HttpServletResponse response) throws IOException {
+    @GetMapping("/users/export/{format}")
+    public void exportToExcel(HttpServletResponse response,@PathVariable String format) throws IOException {
         response.setContentType("application/octet-stream");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());
-
+         userService.delete(16);
+        userService.delete(17);
+        userService.delete(18);
+        userService.delete(19);;
         String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+        String headerValue = "attachment; filename=users_" + currentDateTime + "."+ exporterFactory.getExtension(format);
         response.setHeader(headerKey, headerValue);
         List<User> users =
                 StreamSupport.stream(userService.getAllUsers().spliterator(),false)
                         .collect(Collectors.toList());
-
-        excelExporter.export(response, users);
+        exporterFactory.getExporterFactory(format).getExporter(User.class)
+                .export(response, users);
     }
 
 
