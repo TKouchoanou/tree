@@ -3,10 +3,15 @@ package malo.bloc.tree.persistence.entity;
 import lombok.*;
 import lombok.experimental.Accessors;
 import malo.bloc.tree.quartz.schedulers.UserScheduler;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -17,7 +22,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(UserScheduler.class)
+@EntityListeners({UserScheduler.class, AuditingEntityListener.class})
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +38,20 @@ public class User implements Serializable {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email", nullable = false, length = 100)
+    @Column(name = "email", nullable = false, length = 100,unique = true)
     private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(
+                    name = "role_id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "user_id"))
+    private Set<Role> roles = new LinkedHashSet<>();
 
     @Column(name = "country", length = 100)
     private String country;
@@ -45,19 +62,12 @@ public class User implements Serializable {
     @Column(name = "adresse", length = 150)
     private String address;
 
+    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @PrePersist
-    void preInsert() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.from(LocalDateTime.now());
-        }
-        if (this.updatedAt == null) {
-            this.updatedAt= LocalDateTime.from(LocalDateTime.now());
-        }
-    }
 }

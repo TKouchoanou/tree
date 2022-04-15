@@ -3,6 +3,9 @@ package malo.bloc.tree.persistence.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,6 +22,7 @@ import java.util.Set;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners({AuditingEntityListener.class})
 public class NodeLeaf implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,25 +38,19 @@ public class NodeLeaf implements Serializable {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime updatedAt;
-
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime createdAt;
-
     @OneToMany(mappedBy = "leaf",cascade = CascadeType.ALL)
     private Set<Link> links = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "leaf",cascade = CascadeType.ALL)
     private Set<Metadata> metadata = new LinkedHashSet<>();
 
-    @PrePersist
-    void preInsert() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.from(LocalDateTime.now());
-        }
-        if (this.updatedAt == null) {
-            this.updatedAt= LocalDateTime.from(LocalDateTime.now());
-        }
-    }
+    @LastModifiedDate
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime updatedAt;
+
+    @CreatedDate
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime createdAt;
+
+
 }

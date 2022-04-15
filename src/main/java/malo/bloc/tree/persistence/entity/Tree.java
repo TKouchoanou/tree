@@ -3,10 +3,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -20,6 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer"})
+@EntityListeners({AuditingEntityListener.class})
 public class Tree implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +39,6 @@ public class Tree implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
     @OneToOne(fetch = FetchType.EAGER, mappedBy = "tree",cascade = CascadeType.ALL)
     private NodeLeaf nodeLeaf;
@@ -53,9 +52,12 @@ public class Tree implements Serializable {
     @ToString.Exclude
     private User user;
 
-    @PrePersist
-    protected void onUpdate() {
-       if(this.createdAt==null);
-       this.createdAt=LocalDateTime.now();
-    }
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
 }

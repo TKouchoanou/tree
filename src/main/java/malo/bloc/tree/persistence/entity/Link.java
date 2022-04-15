@@ -1,6 +1,9 @@
 package malo.bloc.tree.persistence.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners({AuditingEntityListener.class})
 public class Link implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +35,7 @@ public class Link implements Serializable {
     @Column(name = "value", nullable = false)
     private String value;
 
+    @LastModifiedDate
     @Column(name = "updated_at",columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 }
