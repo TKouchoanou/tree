@@ -1,29 +1,38 @@
 package malo.bloc.tree.dtos.create;
 
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.Accessors;
+import malo.bloc.tree.dtos.PartialUserDto;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDateTime;;
+import java.util.Set;
 
 @Data
-public class NewUserDto implements Serializable {
+@Builder
+@Accessors(chain = true)
+@Getter
+@Setter
+public class NewUserDto extends PartialUserDto implements Serializable {
     @Valid
-    private final NewTreeDto tree;
-    private final String firstName;
-    private final String lastName;
+    private  NewTreeDto tree;
+    private  String firstName;
+    private  String lastName;
     @NotNull
     @Email
-    private final String email;
-    private final String country;
-    private final String city;
-    private final String address;
+    private  String email;
+    private  String password;
+    private       Set<String> roleNames;
+    private  String country;
+    private  String city;
+    private  String address;
     @DateTimeFormat
-    private final LocalDateTime updatedAt;
+    private  LocalDateTime updatedAt;
 
     @DateTimeFormat
-    private final LocalDateTime createdAt;
+    private  LocalDateTime createdAt;
 }

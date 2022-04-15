@@ -1,5 +1,6 @@
 package malo.bloc.tree.mapper;
 
+import malo.bloc.tree.dtos.PartialUserDto;
 import malo.bloc.tree.dtos.TreeDto;
 import malo.bloc.tree.dtos.UserDto;
 import malo.bloc.tree.dtos.create.NewTreeDto;
@@ -7,32 +8,43 @@ import malo.bloc.tree.dtos.create.NewUserDto;
 import malo.bloc.tree.mapper.tree.TreeDto2EntityMapper;
 import malo.bloc.tree.mapper.user.UserDto2EntityMapper;
 import malo.bloc.tree.persistence.entity.NodeLeaf;
+import malo.bloc.tree.persistence.entity.Role;
 import malo.bloc.tree.persistence.entity.Tree;
 import malo.bloc.tree.persistence.entity.User;
+import malo.bloc.tree.service.RoleService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Component
 public class Mapper implements TreeDto2EntityMapper, UserDto2EntityMapper {
     private final ModelMapper modelMapper=new ModelMapper();
-
-
+    @Autowired
+    private RoleService roleService;
 
     @Override
-    public User toEntity(UserDto o) {
-        User user = this.modelMapper.map( o,User.class);
+    public User toEntity(UserDto userDto) {
+        User user = this.modelMapper.map( userDto,User.class);
+        toEntityHandleRoles(user,userDto);
         return handleUserAssociationForSave(user);
     }
 
     @Override
-    public UserDto toDto(User o) {
-        return this.modelMapper.map( o,UserDto.class);
+    public UserDto toDto(User user) {
+        UserDto userDto = this.modelMapper.map( user,UserDto.class);
+        toDtoHandleRoles(user,userDto);
+        return userDto;
     }
 
     @Override
-    public User toEntity(NewUserDto o) {
-        User user = this.modelMapper.map( o,User.class);
+    public User toEntity(NewUserDto userDto) {
+        User user = this.modelMapper.map(userDto,User.class);
+        toEntityHandleRoles(user,userDto);
         return handleUserAssociationForSave(user);
     }
 
@@ -55,6 +67,16 @@ public class Mapper implements TreeDto2EntityMapper, UserDto2EntityMapper {
         return handleTreeAssociationForSave(tree);
     }
 
+    private void toEntityHandleRoles(User user, PartialUserDto userDto){
+        HashMap<String,Role> roles = roleService.getAllRolesMapByName();
+        Set<Role> userRoles= userDto.getRoleNames().stream().map(roles::get).collect(Collectors.toSet());
+        user.setRoles(userRoles);
+    }
+
+    private void toDtoHandleRoles(User user, PartialUserDto userDto){
+        Set<String> rolesNames=user.getRoles().stream().map(Role::toString).collect(Collectors.toSet());
+        userDto.setRoleNames(rolesNames);
+    }
 
     private User handleUserAssociationForSave(User user){
         Tree tree = user.getTree();
