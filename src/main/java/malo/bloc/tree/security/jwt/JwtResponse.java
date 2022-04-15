@@ -1,8 +1,7 @@
-package malo.bloc.tree.security;
+package malo.bloc.tree.security.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.stereotype.Component;
 @Getter
 @AllArgsConstructor
 public class JwtResponse {

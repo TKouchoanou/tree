@@ -1,4 +1,4 @@
-package malo.bloc.tree.security;
+package malo.bloc.tree.security.jwt;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,5 +11,14 @@ import org.springframework.stereotype.Component;
 public class JwtRequest {
     private static final long serialVersionUID = 5926468583005150707L;
     private String username;
+    private String email ;
     private String password;
+
+    public String getEmail() {
+        return email==null?username:email;
+    }
+
+    public String getUsername() {
+        return email!=null?email:username;
+    }
 }

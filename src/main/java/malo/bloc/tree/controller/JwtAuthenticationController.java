@@ -1,9 +1,9 @@
 package malo.bloc.tree.controller;
 
-import malo.bloc.tree.security.JwtRequest;
-import malo.bloc.tree.security.JwtResponse;
-import malo.bloc.tree.security.JwtTokenUtils;
-import malo.bloc.tree.security.JwtUserDetailsService;
+import malo.bloc.tree.security.jwt.JwtRequest;
+import malo.bloc.tree.security.jwt.JwtResponse;
+import malo.bloc.tree.security.jwt.JwtTokenUtils;
+import malo.bloc.tree.security.jwt.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,6 +42,5 @@ public class JwtAuthenticationController {
         } catch (BadCredentialsException e) {
         throw new Exception("INVALID_CREDENTIALS", e);
        }
-
     }
 }

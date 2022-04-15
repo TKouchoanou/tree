@@ -1,10 +1,11 @@
 package malo.bloc.tree.conf.technical;
 
-import malo.bloc.tree.security.JwtAuthenticationEntryPoint;
-import malo.bloc.tree.security.JwtRequestFilter;
+import malo.bloc.tree.security.jwt.JwtAuthenticationEntryPoint;
+import malo.bloc.tree.security.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -34,12 +35,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      configure le gestionnaire d'authentification pour savoir où charger l'utilisateur
      afin de comparer les identifiants (username,password) et utilise l'encodeur BCryptPasswordEncoder
      pour la comparaison de mot de pass
+     @Lazy pour eviter les dépendances circulaires entre beans https://www.baeldung.com/circular-dependencies-in-spring
      **/
      @Autowired
-     public void configureGlobal(AuthenticationManagerBuilder managerBuilder) throws Exception {
-     managerBuilder.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
+     public void configureGlobal(AuthenticationManagerBuilder managerBuilder,@Lazy PasswordEncoder passwordEncoder) throws Exception {
+     managerBuilder.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder);
     }
 
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -54,7 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
          // on desactive csrf car on en a pas besoin  3.589,11
         http.csrf().disable()
-                .authorizeRequests().antMatchers("/authenticate").permitAll()           // authorise toutes les requêtes suivantes sans authentification
+                .authorizeRequests().antMatchers("/authenticate","/users/export/*").permitAll()           // authorise toutes les requêtes suivantes sans authentification
                 .anyRequest().authenticated().and()                                               //toutes les autres requêtes ont besoin d'authentification
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()            //Gère le requêtes necessitant une authentification et non authentifié par ce point d'entrée
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);                      // assure toi qu c'est la politique de session sans état qui est utilisé, on pas besoin de stocker les informations utilisateurs
