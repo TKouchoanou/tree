@@ -42,7 +42,7 @@ public class UserTreeService {
     public User addTreeToUser(int userId,Tree tree){
         User user = userService.getUserByIdOrThrowException(userId);
         user.setTree(tree).getTree().setUser(user);
-        return  userService.save(user);
+        return  userService.update(user);
     }
 
     public Optional<Tree> deleteUserTree(int userId, int id){

@@ -5,6 +5,7 @@ import malo.bloc.tree.persistence.entity.Tree;
 import malo.bloc.tree.persistence.entity.User;
 import malo.bloc.tree.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -14,8 +15,13 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder bcryptEncoder;
 
-    public User save(User user){
+
+    public User create(User user){
+        String password= user.getPassword();
+        user.setPassword(bcryptEncoder.encode(password));
         return userRepository.save(user);
     }
 
