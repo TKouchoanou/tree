@@ -41,7 +41,7 @@ public class User implements Serializable {
     @Column(name = "email", nullable = false, length = 100,unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)

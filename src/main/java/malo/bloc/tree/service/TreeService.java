@@ -1,10 +1,13 @@
 package malo.bloc.tree.service;
 
+import malo.bloc.tree.exceptions.exceptions.EmptyIdException;
+import malo.bloc.tree.exceptions.exceptions.ErrorCode;
 import malo.bloc.tree.persistence.entity.Tree;
 import malo.bloc.tree.persistence.repository.TreeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;
 import java.util.Collection;
 import java.util.Optional;
@@ -20,6 +23,7 @@ public class TreeService {
  }
 
   public Optional<Tree> findById(int id){
+      AssertNotEmptyTreeId(id);
        return  treeRepository.findById(id);
     }
 
@@ -35,11 +39,7 @@ public class TreeService {
     }
 
     public Tree getTreeByIdOrThrowException(int treeId){
-        Optional<Tree> optionalTree = this.findById(treeId);
-        if(optionalTree.isPresent()){
-            return optionalTree.get();
-        }
-        throw new EntityNotFoundException("tree with id = "+treeId+" does not found for delete");
+       return this.findById(treeId).orElseThrow(()->new EntityNotFoundException("tree with id = "+treeId+" does not found for delete update or get"));
     }
 
 
@@ -63,5 +63,9 @@ public class TreeService {
         return false;
     }
 
+    public void AssertNotEmptyTreeId(@Nullable Object id){
+        if(id == null || id.equals(0))
+            throw new EmptyIdException("can't update tree with empty id ", ErrorCode.ENTITY_TREE_NOT_FOUND);
+    }
 
 }

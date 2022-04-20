@@ -24,7 +24,7 @@ public class NodeLeafDto implements Serializable {
     @Valid
     private   Set<LinkDto> links;
     @Valid
-    private   Set<MetadataDto> metadata;
+    private   Set<MetadataDto> metadatas;
     private   LocalDateTime updatedAt;
     private   LocalDateTime createdAt;
 }

@@ -2,22 +2,22 @@ package malo.bloc.tree.controller;
 
 import malo.bloc.tree.dtos.TreeDto;
 import malo.bloc.tree.dtos.create.NewTreeDto;
-import malo.bloc.tree.dtos.error.ErrorDtoInterface;
+import malo.bloc.tree.dtos.error.ErrorDto;
+import malo.bloc.tree.exceptions.exceptions.NotResourceOwnerException;
 import malo.bloc.tree.exports.FormatExporterFactory;
 import malo.bloc.tree.mapper.tree.TreeDto2EntityMapper;
 import malo.bloc.tree.persistence.entity.Tree;
 import malo.bloc.tree.persistence.entity.User;
+import malo.bloc.tree.persistence.repository.TreeRepository;
 import malo.bloc.tree.search.repository.UserRepository;
 import malo.bloc.tree.service.UserService;
 import malo.bloc.tree.service.UserTreeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -32,12 +32,12 @@ public class TreeController {
     private UserTreeService userTreeService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TreeRepository treeRepository;
 
     @Autowired
     TreeDto2EntityMapper mapper;
 
-    @Autowired
-    ErrorDtoInterface error;
     @Autowired
     FormatExporterFactory<User> exporterFactory;
 
@@ -45,16 +45,18 @@ public class TreeController {
     @Qualifier("main")
     UserRepository userSearchRepository;
 
+    @GetMapping(value = "/users/trees")
+    public Iterable<Tree> userTrees(){
+        return  treeRepository.findAll();
+    }
 
     @PostMapping(value= "user/{userid}/add/child/tree/{treeId}")
-    public TreeDto addChild(@PathVariable ("userid")  int uid ,@PathVariable ("treeId")  int treeId, @RequestBody TreeDto treeDto){
-        Tree tree =  mapper.toEntity(treeDto);
-        Tree savedTree= userTreeService.addChildForUserTree(uid,treeId,tree);
-        return  mapper.toDto(savedTree);
+    public TreeDto addChild(@PathVariable ("userid")  int uid ,@PathVariable ("treeId")  int treeId, @RequestBody TreeDto treeDto) throws NotResourceOwnerException {
+        return  mapper.toDto(userTreeService.addChildForUserTree(uid,treeId,mapper.toEntity(treeDto)));
     }
 
     @PostMapping(value= "user/{userid}/add/children/tree/{treeId}")
-    public TreeDto addChildren(@PathVariable ("userid")  int uid , @PathVariable ("treeId")  int treeId, @RequestBody Collection<TreeDto> treeDtoList){
+    public TreeDto addChildren(@PathVariable ("userid")  int uid , @PathVariable ("treeId")  int treeId, @RequestBody Collection<TreeDto> treeDtoList) throws NotResourceOwnerException {
         Collection<Tree> children = treeDtoList.stream().map(treeDto->mapper.toEntity(treeDto)).collect(Collectors.toList());
         Tree savedTree= userTreeService.addChildrenForUserTree(uid,treeId,children);
         return  mapper.toDto(savedTree);
@@ -66,26 +68,21 @@ public class TreeController {
     }
 
     @GetMapping(value= "user/{userid}/tree/{treeId}")
-    public Tree show(@PathVariable ("userid")  int uid,@PathVariable ("treeId")  int id ){
+    public Tree show(@PathVariable ("userid")  int uid,@PathVariable ("treeId")  int id ) throws NotResourceOwnerException {
         return userTreeService.findById(uid,id).get();
     }
 
     @PutMapping(value= "user/{userid}/update/tree")
-    public TreeDto update(@PathVariable ("userid")  int uid , @RequestBody TreeDto treeDto){
+    public TreeDto update(@PathVariable ("userid")  int uid , @RequestBody TreeDto treeDto) throws NotResourceOwnerException {
         Tree tree= userTreeService.updateUserTree(uid,mapper.toEntity(treeDto) ) ;
        return mapper.toDto(tree);
     }
 
     @DeleteMapping(value= "user/{userId}/delete/tree/{treeId}")
-    public ResponseEntity<Object> delete(@PathVariable ("userId")  int uid , @PathVariable ("treeId")  int treeId){
-        try {
-            Optional<Tree> tree = userTreeService.deleteUserTree(uid,treeId);
-            return tree.map(value -> new ResponseEntity<Object>(mapper.toDto(value), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(error.setMessage("Failed to delete tree with id =" + treeId), HttpStatus.OK));
-        }catch (EntityNotFoundException e){
-            return ResponseEntity.badRequest().
-                    contentType(MediaType.APPLICATION_JSON).
-                    body(error.setMessage(e.getMessage()));
-        }
+    public ResponseEntity<Object> delete(@PathVariable ("userId")  int uid , @PathVariable ("treeId")  int treeId) throws NotResourceOwnerException {
+        Optional<Tree> tree = userTreeService.deleteUserTree(uid,treeId);
+        return tree.map(value -> new ResponseEntity<Object>(mapper.toDto(value), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>((new ErrorDto()).setMessage("Failed to delete tree with id ="+treeId), HttpStatus.NOT_MODIFIED));
+
     }
 
     @GetMapping(value= "user/{userid}/search")
@@ -99,10 +96,6 @@ public class TreeController {
         response.setContentType("application/octet-stream");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());
-         userService.delete(16);
-        userService.delete(17);
-        userService.delete(18);
-        userService.delete(19);;
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=users_" + currentDateTime + "."+ exporterFactory.getExtension(format);
         response.setHeader(headerKey, headerValue);

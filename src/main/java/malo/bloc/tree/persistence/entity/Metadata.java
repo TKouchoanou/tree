@@ -37,6 +37,6 @@ public class Metadata implements Serializable {
     private String value;
 
     @LastModifiedDate
-    @Column(name = "updated_at", nullable = true,columnDefinition = "TIMESTAMP")
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 }

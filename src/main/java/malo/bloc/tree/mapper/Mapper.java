@@ -69,7 +69,7 @@ public class Mapper implements TreeDto2EntityMapper, UserDto2EntityMapper {
 
     private void toEntityHandleRoles(User user, PartialUserDto userDto){
         HashMap<String,Role> roles = roleService.getAllRolesMapByName();
-        Set<Role> userRoles= userDto.getRoleNames().stream().map(roles::get).collect(Collectors.toSet());
+        Set<Role> userRoles = userDto.getRoleNames().stream().map(roles::get).collect(Collectors.toSet());
         user.setRoles(userRoles);
     }
 
@@ -89,14 +89,15 @@ public class Mapper implements TreeDto2EntityMapper, UserDto2EntityMapper {
         NodeLeaf leaf = tree.getNodeLeaf();
         if(leaf!=null)
             handleLeafAssociationForSave(leaf.setTree(tree));
-            tree.getChildren().forEach(child -> child.setParent(tree));
-            tree.getChildren().forEach(this::handleTreeAssociationForSave);
+          if(tree.getChildren()!=null)  tree.getChildren().forEach(child -> child.setParent(tree));
+        if(tree.getChildren()!=null) tree.getChildren().forEach(this::handleTreeAssociationForSave);
         return tree;
     }
 
     private NodeLeaf handleLeafAssociationForSave(NodeLeaf leaf){
-        leaf.getLinks().forEach(l -> l.setLeaf(leaf));
-        leaf.getMetadata().forEach(m-> m.setLeaf(leaf));
+        System.out.println(leaf);
+        if(leaf.getLinks()!=null) leaf.getLinks().forEach(l -> l.setLeaf(leaf));
+        if(leaf.getMetadatas()!=null)  leaf.getMetadatas().forEach(m-> m.setLeaf(leaf));
         return leaf;
     }
 }

@@ -25,6 +25,6 @@ public class TreeDto implements Serializable {
     private   LocalDateTime createdAt;
     @Valid
     private   NodeLeafDto nodeLeaf;
-    private   Set<Integer> childIds;
+    private   Set<TreeDto> children;
     private   Integer userId;
 }

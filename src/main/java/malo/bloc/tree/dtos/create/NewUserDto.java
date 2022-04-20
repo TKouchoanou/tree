@@ -7,9 +7,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -25,8 +27,10 @@ public class NewUserDto extends PartialUserDto implements Serializable {
     @NotNull
     @Email
     private  String email;
+    @NotNull
     private  String password;
-    private       Set<String> roleNames;
+    @NotEmpty
+    private       Set<String> roleNames=new HashSet<>();
     private  String country;
     private  String city;
     private  String address;

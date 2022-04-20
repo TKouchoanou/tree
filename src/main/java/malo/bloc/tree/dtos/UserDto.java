@@ -8,6 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -28,7 +29,7 @@ public class UserDto extends PartialUserDto implements Serializable {
     @Email
     @NotNull
     private   String email;
-    private   Set<String> roleNames;
+    private   Set<String> roleNames=new HashSet<>();
     private   String country;
     private   String city;
     private   String address;

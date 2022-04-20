@@ -39,10 +39,12 @@ public class NodeLeaf implements Serializable {
     private String title;
 
     @OneToMany(mappedBy = "leaf",cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<Link> links = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "leaf",cascade = CascadeType.ALL)
-    private Set<Metadata> metadata = new LinkedHashSet<>();
+    @ToString.Exclude
+    private Set<Metadata> metadatas = new LinkedHashSet<>();
 
     @LastModifiedDate
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP")

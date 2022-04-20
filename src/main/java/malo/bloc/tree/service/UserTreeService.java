@@ -1,11 +1,13 @@
 package malo.bloc.tree.service;
 
+
+import malo.bloc.tree.exceptions.exceptions.ErrorCode;
+import malo.bloc.tree.exceptions.exceptions.NotResourceOwnerException;
 import malo.bloc.tree.persistence.entity.Tree;
 import malo.bloc.tree.persistence.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,25 +18,24 @@ public class UserTreeService {
     @Autowired
     private UserService userService;
 
-    public Tree addChildrenForUserTree(int userId, int treeId, Collection<Tree> children){
+    public Tree addChildrenForUserTree(int userId, int treeId, Collection<Tree> children) throws NotResourceOwnerException {
         Tree tree= this.getTreeByUserAndTreeOrThrowException(userId,treeId);
         return  treeService.addChildren(tree,children);
     }
 
-    public Tree addChildForUserTree(int userid, int treeId,Tree child){
+    public Tree addChildForUserTree(int userid, int treeId,Tree child) throws NotResourceOwnerException {
         Tree tree =this.getTreeByUserAndTreeOrThrowException(userid,treeId);
         return  treeService.addChild(tree,child);
     }
 
-    public Tree updateUserTree(int userId,Tree tree){
-        if(tree.getId() == null || tree.getId().equals(0))
-            throw new EntityNotFoundException("can't update tree with empty id ");
+    public Tree updateUserTree(int userId,Tree tree) throws NotResourceOwnerException {
+        treeService.AssertNotEmptyTreeId(tree.getId());
         User user = userService.getUserByIdOrThrowException(userId);
-        isOwnerOrThrowException(user,tree);
+        AssertIsResourceOwner(user,tree);
         return treeService.update(tree);
     }
 
-    public Optional<Tree> findById(int userid, int treeId){
+    public Optional<Tree> findById(int userid, int treeId) throws NotResourceOwnerException {
         Tree tree= this.getTreeByUserAndTreeOrThrowException(userid,treeId);
         return Optional.ofNullable(tree);
     }
@@ -45,15 +46,15 @@ public class UserTreeService {
         return  userService.update(user);
     }
 
-    public Optional<Tree> deleteUserTree(int userId, int id){
+    public Optional<Tree> deleteUserTree(int userId, int id) throws NotResourceOwnerException {
         Tree tree= this.getTreeByUserAndTreeOrThrowException(userId,id);
         return treeService.delete(tree) ;
     }
 
-    public Tree getTreeByUserAndTreeOrThrowException(int userId, int treeId){
+    public Tree getTreeByUserAndTreeOrThrowException(int userId, int treeId) throws NotResourceOwnerException {
         Tree tree= treeService.getTreeByIdOrThrowException(treeId);
         User user = userService.getUserByIdOrThrowException(userId);
-        isOwnerOrThrowException(user,tree);
+        AssertIsResourceOwner(user,tree);
         return tree;
     }
 
@@ -61,12 +62,11 @@ public class UserTreeService {
         return Objects.equals(user.getTree().getId(), tree.getId()) || treeService.hasChildWithId(user.getTree(), tree.getId());
     }
 
-
-    private void isOwnerOrThrowException( User user, Tree tree){
-        user.setTree(tree);
+    private void AssertIsResourceOwner(User user, Tree tree) throws NotResourceOwnerException {
         if(!isOwner(user,tree))
-            throw new EntityNotFoundException("user with id = "+user.getId()+" is not owner of tree with id = "+tree.getId());
+            throw new NotResourceOwnerException("user with id = "+user.getId()+" is not owner of tree with id = "+tree.getId(), ErrorCode.NOT_TREE_OWNER);
 
     }
+
 
 }
