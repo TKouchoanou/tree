@@ -56,8 +56,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
          // on desactive csrf car on en a pas besoin  3.589,11
-        http.csrf().disable()
-                .authorizeRequests().antMatchers("/authenticate","/users/export/*").permitAll()           // authorise toutes les requêtes suivantes sans authentification
+             http.cors().and().
+                csrf().disable()
+                .authorizeRequests().antMatchers("/authenticate","/users/export/*","/users/trees","/users","/user/*").permitAll()           // authorise toutes les requêtes suivantes sans authentification
                 .anyRequest().authenticated().and()                                               //toutes les autres requêtes ont besoin d'authentification
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()            //Gère le requêtes necessitant une authentification et non authentifié par ce point d'entrée
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);                      // assure toi qu c'est la politique de session sans état qui est utilisé, on pas besoin de stocker les informations utilisateurs
