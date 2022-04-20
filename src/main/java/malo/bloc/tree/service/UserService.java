@@ -40,6 +40,7 @@ public class UserService {
 
     public User getUserById(int id){
         AssertNotEmptyUserId(id);
+        System.out.println(userRepository.getById(id));
         return userRepository.getById(id);
     }
 
@@ -61,7 +62,7 @@ public class UserService {
     }
     public void AssertNotEmptyUserId(@Nullable Object id){
         if(id == null || id.equals(0))
-            throw new EmptyIdException("can't update get or delete tree with empty id ",ErrorCode.EMPTY_USER_ID);
+            throw new EmptyIdException("can't update get or delete user with empty id ",ErrorCode.EMPTY_USER_ID);
     }
 
     private void setPassWord(User user){

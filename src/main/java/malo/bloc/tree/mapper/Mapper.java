@@ -29,7 +29,7 @@ public class Mapper implements TreeDto2EntityMapper, UserDto2EntityMapper {
 
     @Override
     public User toEntity(UserDto userDto) {
-        User user = this.modelMapper.map( userDto,User.class);
+        User user = this.modelMapper.map(userDto,User.class);
         toEntityHandleRoles(user,userDto);
         return handleUserAssociationForSave(user);
     }

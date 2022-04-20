@@ -43,7 +43,7 @@ public class Tree implements Serializable {
     @OneToOne(fetch = FetchType.EAGER, mappedBy = "tree",cascade = CascadeType.ALL)
     private NodeLeaf nodeLeaf;
 
-    @OneToMany(mappedBy = "parent",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parent",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Set<Tree> children = new LinkedHashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY)

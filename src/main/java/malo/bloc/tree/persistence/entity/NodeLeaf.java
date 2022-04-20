@@ -47,11 +47,11 @@ public class NodeLeaf implements Serializable {
     private Set<Metadata> metadatas = new LinkedHashSet<>();
 
     @LastModifiedDate
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @CreatedDate
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
 
