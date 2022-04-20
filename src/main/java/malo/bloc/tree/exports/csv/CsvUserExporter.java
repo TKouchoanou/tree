@@ -1,11 +1,12 @@
 package malo.bloc.tree.exports.csv;
 
 import malo.bloc.tree.persistence.entity.User;
+import org.springframework.stereotype.Component;
 
 
 import java.util.LinkedHashMap;
-
-public class UserExporter extends GenericExporter<User> {
+@Component
+public class CsvUserExporter extends GenericExporter<User> {
     @Override
     protected LinkedHashMap<String, String> beanToMapData(User user) {
         LinkedHashMap<String,String> data =new LinkedHashMap<>();

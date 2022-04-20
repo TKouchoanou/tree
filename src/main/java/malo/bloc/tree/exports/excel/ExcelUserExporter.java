@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 @Component
-public class UserExporter extends GenericExporter<User> {
+public class ExcelUserExporter extends GenericExporter<User> {
     @Autowired
     UserService userService;
     private static final int SHEET_SIZE=100;
